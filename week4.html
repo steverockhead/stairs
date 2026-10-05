@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precast Concrete Design</title>
+
+    <style>
+        body {
+            background-color: #e6e6e6;
+            font-family: Arial, sans-serif;
+            color: #333333;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1 {
+            color: #2f4f4f;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #555555;
+        }
+
+        .intro {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #999999;
+            margin-bottom: 30px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: #0066cc;
+        }
+
+        .section-title {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .hero-image {
+            margin-bottom: 20px;
+        }
+
+        .hero-grid {
+            margin-bottom: 30px;
+        }
+
+        .hero-text {
+            align-self: start;
+        }
+
+        .hero-text > p:first-child {
+            margin-top: 0;
+        }
+
+        .hero-text p {
+            margin-bottom: 14px;
+        }
+
+        .hero-text h2 {
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        .info-grid {
+            margin-top: 0;
+        }
+
+        .further-info {
+            margin-top: 28px;
+            padding-top: 8px;
+            border-top: 1px solid #b8b8b8;
+        }
+
+        .info-grid section {
+            background-color: #f3f3f3;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .info-grid h2 {
+            margin-top: 0;
+        }
+
+        .closing {
+            font-style: italic;
+        }
+
+        @media (min-width: 700px) {
+            main {
+                max-width: 1320px;
+                padding: 32px 40px;
+            }
+
+            body {
+                font-size: 17px;
+            }
+
+            .hero-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+                gap: 44px;
+                align-items: stretch;
+            }
+
+            .hero-image {
+                height: 100%;
+                margin-bottom: 0;
+            }
+
+            .hero-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: top;
+                max-width: 620px;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 24px;
+            }
+
+            .info-grid section {
+                margin-bottom: 0;
+            }
+        }
+
+.model-toggle {
+            display: block;
+            margin-top: 12px;
+            padding: 10px 16px;
+            border: 1px solid #666666;
+            background-color: #f3f3f3;
+            color: #333333;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .model-toggle:hover {
+            background-color: #ffffff;
+        }
+
+        @media (min-width: 1400px) {
+            main {
+                max-width: 1600px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1050px minmax(0, 1fr);
+                gap: 40px;
+            }
+
+            .hero-image {
+                width: 1050px;
+                height: auto;
+            }
+
+            .hero-image img {
+                width: 100%;
+                max-width: none;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+            }
+        }
+
+        main {
+            padding-top: 16px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 6px;
+        }
+
+        .intro {
+            margin-bottom: 12px;
+        }
+
+        hr {
+            margin-top: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 700px) {
+            main {
+                padding-top: 18px;
+            }
+        }
+
+        .model-stage {
+            position: relative;
+            width: 100%;
+            height: 620px;
+            overflow: hidden;
+            background-color: #e6e6e6;
+        }
+
+        .static-model,
+        .model-loading,
+        .live-model {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .static-model {
+            z-index: 3;
+            opacity: 1;
+            transition: opacity 1.4s ease;
+        }
+
+        .static-model.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .static-model img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .model-loading {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e6e6e6;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .model-stage.is-loading .model-loading {
+            opacity: 1;
+        }
+
+        .model-loading-box {
+            text-align: center;
+            padding: 16px 20px;
+            background-color: #f3f3f3;
+            border: 1px solid #999999;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        .loading-spinner {
+            width: 28px;
+            height: 28px;
+            margin: 0 auto 10px;
+            border: 4px solid #cccccc;
+            border-top-color: #2f4f4f;
+            border-radius: 50%;
+            animation: modelSpin 0.9s linear infinite;
+        }
+
+        @keyframes modelSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .live-model {
+            z-index: 2;
+            border: 0;
+            background: transparent;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .live-model.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 1399px) {
+            .model-stage {
+                height: 560px;
+            }
+        }
+
+        @media (max-width: 699px) {
+            .model-stage {
+                height: 430px;
+            }
+
+            .static-model img {
+                object-fit: contain;
+                background-color: #e6e6e6;
+            }
+
+            .hero-image {
+                height: auto;
+            }
+        }
+
+        .model-hotspot {
+            position: absolute;
+            z-index: 3;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #f5efd7;
+            background-color: #2f4f4f;
+            color: #ffffff;
+            font: bold 16px Arial, sans-serif;
+            line-height: 34px;
+            text-align: center;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            cursor: default;
+        }
+
+        .model-hotspot .hotspot-tooltip {
+            position: absolute;
+            left: 48px;
+            top: 50%;
+            transform: translateY(-50%);
+            min-width: 220px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #b6a786;
+            background-color: rgba(245, 239, 215, 0.97);
+            color: #333333;
+            font: 14px/1.4 Arial, sans-serif;
+            font-weight: normal;
+            text-align: left;
+            white-space: normal;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .model-hotspot .hotspot-tooltip::before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 8px 8px 8px 0;
+            border-style: solid;
+            border-color: transparent rgba(245, 239, 215, 0.97) transparent transparent;
+        }
+
+        .model-hotspot:hover .hotspot-tooltip,
+        .model-hotspot:focus .hotspot-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hotspot-1 {
+            left: 50%;
+            top: 70%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-2 {
+            left: 44%;
+            top: 26%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-3 {
+            left: 24%;
+            top: 66%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot-3 .hotspot-tooltip {
+            left: 48px;
+            top: 50%;
+        }
+
+        @media (max-width: 900px) {
+            .model-hotspot .hotspot-tooltip {
+                min-width: 180px;
+                font-size: 13px;
+            }
+        }
+
+        .model-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .model-actions .model-toggle {
+            margin-top: 0;
+        }
+
+        .instructions-toggle {
+            padding: 10px 16px;
+            border: 1px solid #666666;
+            background-color: #f3f3f3;
+            color: #333333;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .instructions-toggle:hover {
+            background-color: #ffffff;
+        }
+
+        .viewer-hint {
+            margin-left: 4px;
+            font-size: 14px;
+            color: #555555;
+        }
+
+        .model-instructions {
+            margin-top: 10px;
+            padding: 12px 14px;
+            background-color: #f3f3f3;
+            border-left: 4px solid #2f4f4f;
+            font-size: 14px;
+        }
+
+        .model-instructions p {
+            margin: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main>
+
+        <h1>Precast Concrete Design</h1>
+
+        <p class="intro" title="About my work">
+            I work in precast concrete design, with a particular focus on stairs and landings.
+        </p>
+
+        <hr>
+
+        <h2 class="section-title">Example of Precast Stair Design</h2>
+
+        <div class="hero-grid">
+
+            <div class="hero-image">
+                <div id="modelStage" class="model-stage">
+                    <div id="modelLoading" class="model-loading" aria-live="polite">
+                        <div class="model-loading-box">
+                            <div class="loading-spinner" aria-hidden="true"></div>
+                            <strong>Loading interactive 3D model...</strong>
+                        </div>
+                    </div>
+
+                    <iframe id="liveModel"
+                            class="live-model"
+                            src="https://steverockhead.github.io/stairs/stair_presentation_export.html"
+                            loading="eager"
+                            title="Interactive 3D model of a precast stair"
+                            allowfullscreen>
+                    </iframe>
+
+                    <div id="staticModel" class="static-model">
+                        <img id="staticModelImage"
+                             src="https://steverockhead.github.io/my-first-web-app/precast-stair-design.png"
+                             alt="3D model of precast concrete stairs and landings">
+
+                        <button class="model-hotspot hotspot-1" type="button"
+                                aria-label="Main flight with attached landing">
+                            1
+                            <span class="hotspot-tooltip">Main flight with attached landing<br>(load-bearing precast unit)</span>
+                        </button>
+
+                        <button class="model-hotspot hotspot-2" type="button"
+                                aria-label="Mid-flight landing bearing onto the main flights">
+                            2
+                            <span class="hotspot-tooltip">Mid-flight landing bearing<br>onto the main flights</span>
+                        </button>
+
+                        <button class="model-hotspot hotspot-3" type="button"
+                                aria-label="Structural steel beam at floor level">
+                            3
+                            <span class="hotspot-tooltip">Structural steel beam<br>at floor level</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="model-actions">
+                    <button id="modelToggle"
+                            class="model-toggle"
+                            type="button"
+                            onclick="toggleLiveModel()">
+                        Show Live 3D Model
+                    </button>
+
+                    <button id="instructionsToggle"
+                            class="instructions-toggle"
+                            type="button"
+                            onclick="toggleInstructions()">
+                        Instructions
+                    </button>
+
+                    <span class="viewer-hint">Tip: right-click the live model for more viewing options.</span>
+                </div>
+
+                <div id="modelInstructions" class="model-instructions" hidden>
+                    <p>
+                        The live model can be explored directly in the browser.
+                        Use the mouse or touch controls to inspect the stair, and right-click
+                        inside the viewer for additional viewing options.
+                    </p>
+                </div>
+            </div>
+
+            <div class="hero-text">
+
+                <p>
+                    This is an example of a precast stair arrangement modelled in three dimensions
+                    before manufacture. The model shows the relationship between the individual
+                    stair flights, landings and the supporting steelwork.
+                </p>
+
+                <p>
+                    Modelling the complete arrangement makes it easier to understand how the separate
+                    components fit together. It also gives a clearer visual representation than
+                    looking at each unit in isolation.
+                </p>
+
+                <p>
+                    A three-dimensional model can also help communicate the design to other people
+                    involved in the project, because the overall arrangement can be viewed before
+                    anything is manufactured or installed.
+                </p>
+
+                <h2>Design Considerations</h2>
+
+                <p>
+                    Stair design involves more than creating the shape of a flight. The position of
+                    landings, structural supports, connections and surrounding construction all need
+                    to work together as part of the overall arrangement.
+                </p>
+
+                <p>
+                    Dimensions must be coordinated so that the individual precast units fit the
+                    building correctly. Connection positions also need to match the supporting
+                    structure, while allowing the stair to be manufactured, transported and installed.
+                </p>
+
+                <p>
+                    Considering these details in the model helps identify clashes or unsuitable
+                    arrangements earlier, when changes are generally easier to make than they would
+                    be after manufacture.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="info-grid">
+
+            <section>
+                <h2>Why I Find It Interesting</h2>
+
+                <p>
+                    Precast stair design combines engineering, manufacturing and construction.
+                    Each unit needs to be designed accurately before it is produced.
+                </p>
+            </section>
+
+            <section>
+                <h2>Technology in Design</h2>
+
+                <p>
+                    Modern design software allows complex concrete units to be modelled in three
+                    dimensions before manufacture. This can help identify problems earlier and
+                    communicate the design more clearly.
+                </p>
+            </section>
+
+            <section>
+                <h2>From Model to Manufacture</h2>
+
+                <p>
+                    A digital model can be used to coordinate geometry and communicate how the
+                    finished components should fit together. This reduces the reliance on interpreting
+                    separate two-dimensional views.
+                </p>
+            </section>
+
+        </div>
+
+        <section class="further-info">
+            <h2>Further Information</h2>
+
+            <p>
+                More information about precast concrete can be found at
+                <a href="https://www.concretecentre.com/">
+                    The Concrete Centre
+                </a>.
+            </p>
+        </section>
+
+        <p class="closing">
+            Accurate digital modelling can help reduce errors before manufacture.
+        </p>
+
+    </main>
+
+    <script>
+        let liveModelReady = false;
+        let showWhenReady = false;
+        let readinessPoll = null;
+        let fallbackReadyTimer = null;
+
+        window.addEventListener("DOMContentLoaded", function () {
+            const liveModel = document.getElementById("liveModel");
+
+            liveModel.addEventListener("load", function () {
+                startViewerReadinessCheck();
+                clearTimeout(fallbackReadyTimer);
+                fallbackReadyTimer = setTimeout(markLiveModelReady, 12000);
+            });
+        });
+
+        function startViewerReadinessCheck() {
+            clearInterval(readinessPoll);
+
+            readinessPoll = setInterval(function () {
+                if (viewerHasVisibleFrame()) {
+                    clearInterval(readinessPoll);
+                    readinessPoll = null;
+                    markLiveModelReady();
+                }
+            }, 150);
+        }
+
+        function viewerHasVisibleFrame() {
+            const liveModel = document.getElementById("liveModel");
+
+            try {
+                const doc = liveModel.contentDocument;
+                if (!doc) {
+                    return false;
+                }
+
+                const canvas = doc.getElementById("view");
+                if (!canvas || canvas.width < 2 || canvas.height < 2) {
+                    return false;
+                }
+                const sample = document.createElement("canvas");
+                sample.width = 48;
+                sample.height = 28;
+
+                const ctx = sample.getContext("2d", { willReadFrequently: true });
+                ctx.drawImage(canvas, 0, 0, sample.width, sample.height);
+
+                const pixels = ctx.getImageData(
+                    0, 0, sample.width, sample.height
+                ).data;
+
+                let minLight = 255;
+                let maxLight = 0;
+                let nonTransparent = 0;
+
+                for (let i = 0; i < pixels.length; i += 4) {
+                    if (pixels[i + 3] < 20) {
+                        continue;
+                    }
+
+                    nonTransparent++;
+
+                    const light =
+                        (pixels[i] * 0.299) +
+                        (pixels[i + 1] * 0.587) +
+                        (pixels[i + 2] * 0.114);
+
+                    if (light < minLight) minLight = light;
+                    if (light > maxLight) maxLight = light;
+                }
+
+                return nonTransparent > 50 && (maxLight - minLight) > 18;
+
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function markLiveModelReady() {
+            if (liveModelReady) {
+                return;
+            }
+
+            liveModelReady = true;
+
+            if (readinessPoll) {
+                clearInterval(readinessPoll);
+                readinessPoll = null;
+            }
+
+            clearTimeout(fallbackReadyTimer);
+
+            if (showWhenReady) {
+                revealLiveModel();
+            }
+        }
+
+        function revealLiveModel() {
+            const stage = document.getElementById("modelStage");
+            const liveModel = document.getElementById("liveModel");
+            const button = document.getElementById("modelToggle");
+
+            showWhenReady = false;
+            const finishFade = function (event) {
+                if (event.propertyName !== "opacity") {
+                    return;
+                }
+
+                liveModel.removeEventListener("transitionend", finishFade);
+
+                if (liveModel.classList.contains("is-visible")) {
+                    stage.classList.remove("is-loading");
+                }
+            };
+
+            liveModel.addEventListener("transitionend", finishFade);
+            liveModel.classList.add("is-visible");
+            button.textContent = "Return to Static Image";
+        }
+
+        function toggleInstructions() {
+            const panel = document.getElementById("modelInstructions");
+            const button = document.getElementById("instructionsToggle");
+
+            panel.hidden = !panel.hidden;
+            button.textContent =
+                panel.hidden ? "Instructions" : "Hide Instructions";
+        }
+
+        function toggleLiveModel() {
+            const stage = document.getElementById("modelStage");
+            const staticModel = document.getElementById("staticModel");
+            const liveModel = document.getElementById("liveModel");
+            const button = document.getElementById("modelToggle");
+
+            const showingLiveModel =
+                liveModel.classList.contains("is-visible");
+
+            if (showingLiveModel) {
+                showWhenReady = false;
+                liveModel.classList.remove("is-visible");
+                stage.classList.remove("is-loading");
+                staticModel.classList.remove("is-hidden");
+                button.textContent = "Show Live 3D Model";
+                return;
+            }
+            stage.classList.add("is-loading");
+            staticModel.classList.add("is-hidden");
+
+            if (liveModelReady) {
+                revealLiveModel();
+            } else {
+                showWhenReady = true;
+                button.textContent = "Loading 3D Model...";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
